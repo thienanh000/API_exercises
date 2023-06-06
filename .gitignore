@@ -17,5 +17,6 @@ buildNumber.properties
 .classpath
 /bin/
 .settings
+test-output
 
 
