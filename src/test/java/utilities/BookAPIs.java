@@ -13,8 +13,6 @@ public class BookAPIs {
 
 	private static String userId;
 	private static String token;
-	private static String isbn = "9781449325862";
-	private static String isbn2 = "9781449331818";
 
 	private void login() {
 		String loginPath = "https://demoqa.com/Account/v1/Login";
@@ -29,7 +27,7 @@ public class BookAPIs {
 		token = userResponse.get("token");
 	}
 
-	public void deleteBookfromProfile() {
+	public void deleteBookfromProfile(String isbn) {
 		login();
 		String deleteBookPath = "https://demoqa.com/BookStore/v1/Book";
 		String deleteBookBodyStr = "{\r\n" + "  \"isbn\": \"" + isbn + "\",\r\n" + "  \"userId\": \"" + userId
@@ -41,11 +39,11 @@ public class BookAPIs {
 		deleteResponse.prettyPrint();
 	}
 
-	public void addBookToProfile() {
+	public void addBookToProfile(String isbn) {
 		login();
 		String addBookPath = "https://demoqa.com/BookStore/v1/Books";
 		String bodyRequest = "{\r\n" + "  \"userId\": \"" + userId + "\",\r\n" + "  \"collectionOfIsbns\": [\r\n"
-				+ "    {\r\n" + "      \"isbn\": \"" + isbn2 + "\"\r\n" + "    }\r\n" + "  ]\r\n" + "}";
+				+ "    {\r\n" + "      \"isbn\": \"" + isbn + "\"\r\n" + "    }\r\n" + "  ]\r\n" + "}";
 
 		RequestSpecification postRequest = given();
 		postRequest.header(new Header("Content-Type", "application/json"));

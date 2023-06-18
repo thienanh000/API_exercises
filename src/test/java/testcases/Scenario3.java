@@ -2,54 +2,52 @@ package testcases;
 
 import static constant.Constant.driver;
 
-import java.time.Duration;
-
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import pageobjects.BookStorePage;
+import pageobjects.LoginPage;
+import pageobjects.ProfilePage;
 import utilities.BookAPIs;
 
-public class Scenario3 extends BookStorePage {
+public class Scenario3 {
 
 	@BeforeTest
 	public void initBroswer() {
 		driver.get("https://demoqa.com/login");
+
+		// 1. Given there is book named “Learning JavaScript Design Patterns”
+		String isbn = "9781449331818";
+		BookAPIs bookAPIs = new BookAPIs();
+		bookAPIs.addBookToProfile(isbn);
 	}
 
 	@Test
 	public void testScenario3() {
-		// 1. Given there is book named “Learning JavaScript Design Patterns”
-		BookAPIs bookAPIs = new BookAPIs();
-		bookAPIs.addBookToProfile();
 
 		// 2. And the user logs into application
-		loginToPage();
+		LoginPage loginPage = new LoginPage();
+		loginPage.loginToPage();
 
 		// 3. And the user is on Profile page
-		new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.textToBe(headerSel, "Profile"));
-		verifyText(headerSel, "Profile", "[ERR] The 'Profile' header is not displayed!");
+		ProfilePage profilePage = new ProfilePage();
+		profilePage.verifyProfilePageHeader();
 
 		// 4. When the user search book “Learning JavaScript Design Patterns”
-		driver.findElement(searchBoxSel).sendKeys("Learning JavaScript Design Patterns");
+		String bookName = "Learning JavaScript Design Patterns";
+		profilePage.searchBook(bookName);
 
 		// 5. And the user clicks on Delete icon
-		driver.findElement(deleteBtnSel).click();
+		profilePage.deleteBook();
 
 		// 6. And the user clicks on OK button
-		driver.findElement(okBtnSel).click();
+		profilePage.clickOkBtn();
 
 		// 7. And the user clicks on OK button of alert “Book deleted.”
-		new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.alertIsPresent());
-		Alert alert = driver.switchTo().alert();
-		alert.accept();
+		profilePage.acceptAlert();
 
 		// 8. And the book is not shown
-		verifyText(noBookSel, "No rows found", "[ERR] Books have not been deleted from collection!");
+		profilePage.verifyBookIsNotShow();
 
 	}
 

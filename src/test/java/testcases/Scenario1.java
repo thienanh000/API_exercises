@@ -2,56 +2,57 @@ package testcases;
 
 import static constant.Constant.driver;
 
-import java.time.Duration;
-
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.By;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import constant.PageName;
 import pageobjects.BookStorePage;
+import pageobjects.LoginPage;
+import pageobjects.ProfilePage;
 import utilities.BookAPIs;
 
-public class Scenario1 extends BookStorePage {
+public class Scenario1 {
 
 	@BeforeTest
 	public void initBroswer() {
 		driver.get("https://demoqa.com/login");
+
+		// Delete book
+		String isbn = "9781593277574";
+		BookAPIs deleteBook = new BookAPIs();
+		deleteBook.deleteBookfromProfile(isbn);
 	}
 
 	@Test
 	public void testScenario1() {
 
-		// 0. Delete book
-		BookAPIs deleteBook = new BookAPIs();
-		deleteBook.deleteBookfromProfile();
-
 		// 1. Login to application
-		loginToPage();
+		LoginPage loginPage = new LoginPage();
+		loginPage.loginToPage();
 
 		// 2. Navigate to Book Store page
-		clickToElement(goToBookStoreBtnSel, true);
-		verifyText(headerSel, "Book Store", "[ERR] The 'Book Store' header is not displayed!");
+		BookStorePage bookStorePage = new BookStorePage();
+		bookStorePage.navBookStorePage();
+		bookStorePage.verifyBookStoreHeader();
 
 		// 3. Select a book "Git Pocket Guide"
-		driver.findElement(bookSel).click();
+		String bookName = "Understanding ECMAScript 6";
+		By bookSel = By.xpath("//a[text()='" + bookName + "']");
+		bookStorePage.selectBook(bookSel);
 
 		// 4. Click on Add To Your Collection
-		clickToElement(addToCollectionBtnSel, true);
+		bookStorePage.addToCollection();
 
 		// 5. Alert “Book added to your collection.” is shown
-		new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.alertIsPresent());
-
-		Alert alert = driver.switchTo().alert();
-		verifyText(alert.getText(), "Book added to your collection.",
-				"[ERR] The notification is '" + alert.getText() + "'");
-		alert.accept();
+		bookStorePage.waitUntilAlertIsPresent();
+		bookStorePage.verifyBookIsAdded();
 
 		// 6. Book is shown in your profile
-		clickToElement(profileMenuSel, true);
-		verifyText(bookSel, "Git Pocket Guide", "[ERR] The book is not displayed in profile!");
+		ProfilePage profilePage = new ProfilePage();
+		profilePage.navPageOnLeftMenu(PageName.PROFILE_PAGE);
+		profilePage.verifyText(bookSel, bookName, "[ERR] The book is not displayed in profile!");
 
 	}
 
