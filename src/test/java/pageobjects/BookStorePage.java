@@ -12,11 +12,11 @@ import org.openqa.selenium.WebElement;
 
 public class BookStorePage extends GeneralPage {
 
-	private static By goToBookStoreBtnSel = By.cssSelector("#gotoStore");
-	private static By addToCollectionBtnSel = By.cssSelector(".text-right.fullButton");
+	private static String bookStorePageHeaderName = "Book Store";
 	private static By searchBoxSel = By.cssSelector("#searchBox");
 	private static By bookListSel = By.cssSelector(".rt-tbody a");
-	private static String bookStorePageHeaderName = "Book Store";
+	private static By goToBookStoreBtnSel = By.cssSelector("#gotoStore");
+	private static By addToCollectionBtnSel = By.cssSelector(".text-right.fullButton");
 
 	public void navBookStorePage() {
 		clickToElement(goToBookStoreBtnSel, true);
