@@ -11,7 +11,7 @@ import constant.PageName;
 import pageobjects.BookStorePage;
 import pageobjects.LoginPage;
 import pageobjects.ProfilePage;
-import utilities.BookAPIs;
+import utilities.api_helpers.RequestHelpers;
 
 public class Scenario1 {
 
@@ -21,16 +21,17 @@ public class Scenario1 {
 
 		// Delete book
 		String isbn = "9781593277574";
-		BookAPIs deleteBook = new BookAPIs();
-		deleteBook.deleteBookfromProfile(isbn);
-	}
-
-	@Test
-	public void testScenario1() {
+		String deleteBookPath = "https://demoqa.com/BookStore/v1/Book";
+		RequestHelpers requestHeplers = new RequestHelpers();
+		requestHeplers.sendDELETERequest(deleteBookPath, isbn);
 
 		// 1. Login to application
 		LoginPage loginPage = new LoginPage();
 		loginPage.loginToPage();
+	}
+
+	@Test
+	public void testScenario1() {
 
 		// 2. Navigate to Book Store page
 		BookStorePage bookStorePage = new BookStorePage();

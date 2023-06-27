@@ -1,4 +1,4 @@
-package utilities;
+package utilities.api_helpers;
 
 import static io.restassured.RestAssured.given;
 
@@ -9,12 +9,20 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-public class BookAPIs {
+public class RequestHelpers {
 
 	private static String userId;
 	private static String token;
+	private static RequestSpecification request = given();
+	private static Response response;
 
-	private void login() {
+	// How to call the exactly name for this utility
+	private void headerCapapilities() {
+		request.header(new Header("Content-type", "application/json; charset=UTF-8"));
+		request.header(new Header("Authorization", "Bearer " + token));
+	}
+
+	private void getUserIdAndToken() {
 		String loginPath = "https://demoqa.com/Account/v1/Login";
 		String loginBodyStr = "{\r\n" + "  \"userName\": \"userName527\",\r\n" + "  \"password\": \"Password@123\"\r\n"
 				+ "}";
@@ -27,29 +35,25 @@ public class BookAPIs {
 		token = userResponse.get("token");
 	}
 
-	public void deleteBookfromProfile(String isbn) {
-		login();
-		String deleteBookPath = "https://demoqa.com/BookStore/v1/Book";
-		String deleteBookBodyStr = "{\r\n" + "  \"isbn\": \"" + isbn + "\",\r\n" + "  \"userId\": \"" + userId
-				+ "\"\r\n" + "}";
-		RequestSpecification deleteRequest = given();
-		deleteRequest.header(new Header("Content-type", "application/json; charset=UTF-8"));
-		deleteRequest.header(new Header("Authorization", "Bearer " + token));
-		Response deleteResponse = deleteRequest.body(deleteBookBodyStr).delete(deleteBookPath);
-		deleteResponse.prettyPrint();
-	}
-
-	public void addBookToProfile(String isbn) {
-		login();
-		String addBookPath = "https://demoqa.com/BookStore/v1/Books";
+	public Response sendPOSTRequest(String postPath, String isbn) {
+		getUserIdAndToken();
 		String bodyRequest = "{\r\n" + "  \"userId\": \"" + userId + "\",\r\n" + "  \"collectionOfIsbns\": [\r\n"
 				+ "    {\r\n" + "      \"isbn\": \"" + isbn + "\"\r\n" + "    }\r\n" + "  ]\r\n" + "}";
 
-		RequestSpecification postRequest = given();
-		postRequest.header(new Header("Content-Type", "application/json"));
-		postRequest.header(new Header("Authorization", "Bearer " + token));
-		Response addBookResponse = postRequest.body(bodyRequest).post(addBookPath);
+		headerCapapilities();
+		response = request.body(bodyRequest).post(postPath);
+		return response;
+	}
 
+	public void sendDELETERequest(String deletePath, String isbn) {
+		getUserIdAndToken();
+		String deleteBookBodyStr = "{\r\n" + "  \"isbn\": \"" + isbn + "\",\r\n" + "  \"userId\": \"" + userId
+				+ "\"\r\n" + "}";
+		headerCapapilities();
+		response = request.body(deleteBookBodyStr).delete(deletePath);
+	}
+
+	public void verifyAddedBook(Response addBookResponse) {
 		Map<String, String> responseStr = JsonPath.from(addBookResponse.asString()).get();
 		if (responseStr.get("message") != null) {
 			System.out.println(responseStr.get("message"));

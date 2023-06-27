@@ -6,9 +6,10 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import io.restassured.response.Response;
 import pageobjects.LoginPage;
 import pageobjects.ProfilePage;
-import utilities.BookAPIs;
+import utilities.api_helpers.RequestHelpers;
 
 public class Scenario3 {
 
@@ -18,8 +19,12 @@ public class Scenario3 {
 
 		// 1. Given there is book named “Learning JavaScript Design Patterns”
 		String isbn = "9781449331818";
-		BookAPIs bookAPIs = new BookAPIs();
-		bookAPIs.addBookToProfile(isbn);
+		String addBookPath = "https://demoqa.com/BookStore/v1/Books";
+
+		RequestHelpers requestHelpers = new RequestHelpers();
+		Response response = requestHelpers.sendPOSTRequest(addBookPath, isbn);
+		requestHelpers.verifyAddedBook(response);
+
 	}
 
 	@Test
